@@ -1,0 +1,60 @@
+﻿@page "/settings"
+
+<div class="container mt-4">
+    <h4 class="mb-3">Settings</h4>
+    <div class="row setting-item">
+		<div class="col-8 setting-label setting-title">General</div>
+    </div>
+
+
+    <div class="row setting-item">
+        <div class="col-6 setting-label">Server</div>
+        <div class="col-6 text-right">
+            <input type="text" class="form-control" @bind="server_host" @oninput="OnServerHostChanged">
+        </div>
+    </div>
+
+    <div class="row setting-item">
+        <div class="col-7 setting-label">Storage Model</div>
+        <div class="col-5 text-right">
+            <select class="form-control form-control-sm" @bind="storage_model" @oninput="OnStorageModelChanged">
+                <option>World</option>
+                <option>Whitespace</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row setting-item">
+        <div class="col-6 setting-label">Subspace Key</div>
+        <div class="col-6 text-right">
+            <input type="text" class="form-control" @bind="subspace_key" @oninput="OnSubspaceKeyChanged">
+        </div>
+    </div>
+</div>
+
+@code {
+    string server_host;
+    string storage_model;
+    string subspace_key;
+
+    protected override async Task OnInitializedAsync()
+    {
+        server_host = P.Get("server_host", "note.ms");
+        storage_model = P.Get("storage_model", "Whitespace");
+        subspace_key = P.Get("subspace_key", "0");
+    }
+
+    async Task OnServerHostChanged(ChangeEventArgs e) {
+        P.Set("server_host", e.Value.ToString());
+    }
+
+    async Task OnStorageModelChanged(ChangeEventArgs e) {
+        P.Set("storage_model", e.Value.ToString());
+    }
+
+    async Task OnSubspaceKeyChanged(ChangeEventArgs e) {
+        P.Set("subspace_key", e.Value.ToString());
+    }
+
+    
+}

@@ -1,0 +1,73 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+
+@if (visited_page_list.Count != 0)
+{
+	<div class="module-panel">
+		<h4>Jump back to page</h4>
+
+		
+		@foreach (var page_name in reversed_page_list)
+		{
+			<div class="row list-item">
+				<NavLink href="@("/note?QueryPageName=" + page_name)">@(page_name)</NavLink>
+
+			</div>
+		}
+	</div>
+}
+
+<div class="module-panel">
+	<h4>Create a new page</h4>
+
+	<div class="input-group">
+		<input type="text" class="form-control" placeholder="Page" @bind="page_name">
+		<div class="input-group-append">
+			<button class="btn btn-primary" type="button" @onclick="GoToPage">GO</button>
+		</div>
+	</div>
+</div>
+
+
+@code {
+	Queue<string> visited_page_list;
+	string[] reversed_page_list;
+	string page_name;
+
+	protected override async Task OnInitializedAsync() {
+		string json = P.Get("recent_used_pages", "");
+		visited_page_list = DeserializeOrDefault<Queue<string>>(json);
+		reversed_page_list = visited_page_list.ToArray();
+		Array.Reverse(reversed_page_list);
+
+		if (!P.ContainsKey("subspace_key")) {
+			P.Set("server_host", "note.ms");
+			P.Set("storage_model", "Whitespace");
+			P.Set("subspace_key", GeneratePassword(7));
+		}
+	}
+
+	async Task GoToPage() {
+		Navigation.NavigateTo($"note?QueryPageName={page_name}");
+	}
+
+	public static T DeserializeOrDefault<T>(string json) where T : new() {
+		if (string.IsNullOrEmpty(json)) {
+			return new T();
+		}
+		return JsonSerializer.Deserialize<T>(json) ?? new T();
+	}
+
+	public static string GeneratePassword(int length) {
+		const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		StringBuilder password = new StringBuilder();
+		Random random = new Random();
+
+		for (int i = 0; i < length; i++) {
+			int index = random.Next(chars.Length);
+			password.Append(chars[index]);
+		}
+
+		return password.ToString();
+	}
+}

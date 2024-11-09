@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhiteMask", "WhiteMask\WhiteMask.csproj", "{8230786C-FFE2-4114-9D31-E8A5EBCB5B51}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whitespace", "..\Whitespace\Whitespace\Whitespace.csproj", "{8C8F0DB3-89FB-4117-BFF7-B3E9E6B7F9CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8230786C-FFE2-4114-9D31-E8A5EBCB5B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8230786C-FFE2-4114-9D31-E8A5EBCB5B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8230786C-FFE2-4114-9D31-E8A5EBCB5B51}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8230786C-FFE2-4114-9D31-E8A5EBCB5B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8230786C-FFE2-4114-9D31-E8A5EBCB5B51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8230786C-FFE2-4114-9D31-E8A5EBCB5B51}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{8C8F0DB3-89FB-4117-BFF7-B3E9E6B7F9CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C8F0DB3-89FB-4117-BFF7-B3E9E6B7F9CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C8F0DB3-89FB-4117-BFF7-B3E9E6B7F9CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C8F0DB3-89FB-4117-BFF7-B3E9E6B7F9CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DDC030EE-B473-4E82-857A-16CDF5274BEB}
+	EndGlobalSection
+EndGlobal

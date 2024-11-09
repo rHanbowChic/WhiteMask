@@ -1,0 +1,164 @@
+﻿@page "/note"
+
+<div class="top-address-bar">
+    <input type="text" class="form-control @(address_bar_color_classes)" autocomplete="off"
+           id="exampleInput" placeholder="Path" @oninput="OnAddressBarChanged" @bind="page_name">
+</div>
+
+<div class="stack">
+    <div class="layer">
+        <div class="layer">
+            <div class="layer">
+                <textarea class="content" readonly=@read_only @oninput="OnContentChanged" @bind="content"></textarea>
+                
+            </div>n
+        </div>
+    </div>
+    <div class="flag">
+        <a href="/">@(storage_label)</a> / <a href="?save">@(current_page)</a>
+    </div>
+    <div class="bg"></div>
+</div>
+
+<script>
+    function set_notems_stack_height() {
+        if (window.location.href.includes("/note")) {
+            let stack = document.querySelector(".stack");
+            const offsetTop = stack.getBoundingClientRect().top;
+            stack.style.height = `calc(100vh - ${offsetTop}px - 27px)`;
+        }
+    }
+    document.querySelector(".navbar-toggler").onclick = set_notems_stack_height;
+    set_notems_stack_height();
+</script>
+
+
+@code {
+    [SupplyParameterFromQuery]
+    public string? QueryPageName { get; set; }
+
+    string page_name = "";
+    string text = "";
+    string storage_label = "";
+    string content = "";
+    string address_bar_color_classes = "";
+    bool read_only;
+
+    string? current_page;
+
+    CancellationTokenSource? _cts_debounce_AddressBar;
+    CancellationTokenSource? _cts_debounce_Content;
+
+    BaseNoteStorage ns;
+
+    Queue<string> recent_used_pages;
+
+    protected override async Task OnInitializedAsync() {
+        string recent_used_pages_json = P.Get("recent_used_pages", "");
+        recent_used_pages = DeserializeOrDefault<Queue<string>>(recent_used_pages_json);
+
+        if (P.Get("storage_model", "Whitespace") == "Whitespace") {
+            string server_host = P.Get("server_host", "note.ms");
+            string subspace_key = P.Get("subspace_key", "0");
+
+            storage_label = $"{server_host} :: {subspace_key}";
+            ns = new AquiferNoteStorage(
+                server_host, subspace_key
+            );
+        }
+        else {
+            string server_host = P.Get("server_host", "note.ms");
+
+            storage_label = server_host;
+            ns = new NetworkNoteStorage(
+                server_host
+            );
+        }
+
+        page_name = QueryPageName is object ? QueryPageName : "";
+        if (page_name != "") await updateNoteArea();
+        current_page = page_name;
+        SetCache(current_page);
+    }
+    async Task OnAddressBarChanged(ChangeEventArgs e) {
+        page_name = e.Value.ToString();
+        address_bar_color_classes = "";
+        _cts_debounce_AddressBar?.Cancel();
+        _cts_debounce_AddressBar = new CancellationTokenSource();
+
+
+        try {
+            await Task.Delay(400, _cts_debounce_AddressBar.Token);
+
+            if (page_name != "") await updateNoteArea();
+            current_page = page_name;
+            StateHasChanged();
+
+            SetCache(current_page);
+
+        } catch (TaskCanceledException) { }
+    }
+
+    async Task updateNoteArea() {
+        var res = await ns.GetText(page_name);
+        if (res.Success) {
+            text = res.Data;
+            content = text;
+            address_bar_color_classes = "blue-bg";
+            read_only = false;
+        }
+        else {
+            text = "";
+            content = res.ErrorMessage;
+            address_bar_color_classes = "yellow-bg";
+            read_only = true;
+        }
+    }
+
+
+    async Task OnContentChanged(ChangeEventArgs e) {
+        content = e.Value.ToString();
+        address_bar_color_classes = "";
+        _cts_debounce_Content?.Cancel();
+        _cts_debounce_Content = new CancellationTokenSource();
+
+
+        try {
+            await Task.Delay(1000, _cts_debounce_Content.Token);
+
+            await postNoteContent();
+            StateHasChanged();
+
+        } catch (TaskCanceledException) { }
+
+    }
+
+    async Task postNoteContent() {
+        text = content;
+        if (!String.IsNullOrEmpty(current_page)) {
+            var res = await ns.SetText(current_page, text);
+            if (res.Success) {
+                address_bar_color_classes = "blue-bg";
+            }
+            else {
+                address_bar_color_classes = "yellow-bg";
+            }
+        }
+
+    }
+
+    void SetCache(string page) {
+        if (recent_used_pages.Contains(page)) return;
+        if (String.IsNullOrEmpty(page)) return;
+        recent_used_pages.Enqueue(page);
+        if (recent_used_pages.Count > 5) recent_used_pages.Dequeue();
+        P.Set("recent_used_pages", JsonSerializer.Serialize<Queue<string>>(recent_used_pages));
+    }
+
+    public static T DeserializeOrDefault<T>(string json) where T : new() {
+        if (string.IsNullOrEmpty(json)) {
+            return new T();
+        }
+        return JsonSerializer.Deserialize<T>(json) ?? new T();
+    }
+}

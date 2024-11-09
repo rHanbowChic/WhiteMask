@@ -1,0 +1,22 @@
+﻿.setting-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+    .setting-item:last-child {
+        border-bottom: none;
+    }
+
+.setting-label {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.setting-title {
+    font-weight: bold;
+}
+
+.text-right {
+    text-align: right !important;
+}

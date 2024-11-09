@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#512BD4</color>
+    <color name="colorPrimaryDark">#2B0B98</color>
+    <color name="colorAccent">#2B0B98</color>
+
+	<color name="launcher_icon_background">@android:color/system_accent1_100</color>
+	<color name="launcher_icon">@android:color/system_neutral1_800</color>
+
+	<color name="ic_launcher_background">#D2E3F8</color>
+</resources>
